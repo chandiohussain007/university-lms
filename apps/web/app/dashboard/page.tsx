@@ -180,7 +180,7 @@ export default function DashboardPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8FAFC' }}>
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
                 <div className="text-center">
                     <div className="spinner w-8 h-8 mx-auto mb-3" />
                     <p className="text-sm font-medium text-slate-500">Loading student portal…</p>
@@ -190,7 +190,7 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen flex" style={{ background: '#F8FAFC' }}>
+        <div className="min-h-screen flex bg-slate-50">
             <Sidebar role="STUDENT" email={email} />
 
             <div className="flex-1 flex flex-col min-w-0">
@@ -205,6 +205,7 @@ export default function DashboardPage() {
                         {/* Notification Bell */}
                         <div className="relative">
                             <button
+                                type="button"
                                 onClick={() => setShowNotifDropdown(!showNotifDropdown)}
                                 className="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 flex items-center justify-center relative transition-colors"
                             >
@@ -224,6 +225,7 @@ export default function DashboardPage() {
                                         </span>
                                         {unreadNotifCount > 0 && (
                                             <button
+                                                type="button"
                                                 onClick={handleMarkAllRead}
                                                 className="text-[11px] text-blue-700 hover:text-blue-800 font-semibold flex items-center gap-1"
                                             >
@@ -304,6 +306,7 @@ export default function DashboardPage() {
                         {(['courses', 'assignments', 'schedule', 'attendance', 'transcript'] as const).map((tab) => (
                             <button
                                 key={tab}
+                                type="button"
                                 onClick={() => setActiveTab(tab)}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold capitalize transition-all whitespace-nowrap ${
                                     activeTab === tab
@@ -509,12 +512,10 @@ export default function DashboardPage() {
                                                         className="input-field flex-1"
                                                     />
                                                     <button
+                                                        type="button"
                                                         disabled={submitting === asg.id || !submitText[asg.id]}
                                                         onClick={() => handleSubmitAssignment(asg.id)}
-                                                        className="px-5 py-2.5 rounded-xl font-semibold text-xs text-white transition-all disabled:opacity-50"
-                                                        style={{ background: '#1D4ED8' }}
-                                                        onMouseEnter={(e) => (e.currentTarget.style.background = '#1E3A8A')}
-                                                        onMouseLeave={(e) => (e.currentTarget.style.background = '#1D4ED8')}
+                                                        className="px-5 py-2.5 rounded-xl font-semibold text-xs text-white transition-all disabled:opacity-50 bg-blue-700 hover:bg-blue-800"
                                                     >
                                                         {submitting === asg.id ? 'Submitting…' : 'Submit Assignment'}
                                                     </button>
@@ -571,6 +572,7 @@ export default function DashboardPage() {
                                         </p>
                                     </div>
                                     <button
+                                        type="button"
                                         onClick={() => window.print()}
                                         className="px-4 py-2 bg-white text-slate-900 text-xs font-bold rounded-xl shadow-xs hover:bg-slate-100 transition-colors flex items-center gap-2"
                                     >

@@ -78,21 +78,19 @@ export default function Sidebar({ role = 'ADMIN', email = '', onLogout }: Sideba
 
     return (
         <aside
-            className="w-64 flex-shrink-0 flex flex-col min-h-screen"
-            style={{ background: '#0F172A' }}
+            className="w-64 flex-shrink-0 flex flex-col min-h-screen bg-slate-900"
         >
             {/* Logo */}
-            <div className="px-6 py-5 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+            <div className="px-6 py-5 border-b border-white/10">
                 <div className="flex items-center gap-3">
                     <div
-                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ background: '#1D4ED8' }}
+                        className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-blue-700 text-white"
                     >
-                        <GraduationCap size={18} className="text-white" />
+                        <GraduationCap size={18} />
                     </div>
                     <div className="min-w-0">
                         <p className="text-white text-sm font-bold leading-none">UniPortal</p>
-                        <p className="text-[10px] mt-0.5 truncate" style={{ color: '#64748B' }}>{roleLabel}</p>
+                        <p className="text-[10px] mt-0.5 truncate text-slate-400">{roleLabel}</p>
                     </div>
                 </div>
             </div>
@@ -119,27 +117,24 @@ export default function Sidebar({ role = 'ADMIN', email = '', onLogout }: Sideba
             </nav>
 
             {/* User footer */}
-            <div className="px-3 pb-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.07)', paddingTop: '1rem' }}>
+            <div className="px-3 pb-4 border-t border-white/10 pt-4">
                 <div className="flex items-center gap-3 px-3 py-2 mb-1">
                     <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                        style={{ background: '#1D4ED8' }}
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0 bg-blue-700"
                     >
                         {initials}
                     </div>
                     <div className="min-w-0">
                         <p className="text-xs font-semibold text-white truncate">{displayName}</p>
                         {email && (
-                            <p className="text-[10px] truncate" style={{ color: '#64748B' }}>{email}</p>
+                            <p className="text-[10px] truncate text-slate-400">{email}</p>
                         )}
                     </div>
                 </div>
                 <button
+                    type="button"
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm transition-colors duration-150"
-                    style={{ color: '#F87171' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(239,68,68,0.1)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-red-400 hover:bg-red-500/10 transition-colors duration-150"
                 >
                     <LogOut size={15} />
                     Sign Out

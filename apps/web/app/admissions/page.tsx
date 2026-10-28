@@ -48,12 +48,12 @@ export default function AdmissionsPage() {
     }
 
     return (
-        <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+        <div className="min-h-screen bg-slate-50">
             {/* Header Navigation */}
             <header className="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#1D4ED8' }}>
-                        <GraduationCap size={20} className="text-white" />
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-blue-700 text-white">
+                        <GraduationCap size={20} />
                     </div>
                     <div>
                         <span className="font-bold text-slate-900 text-sm">UniPortal</span>
@@ -61,6 +61,7 @@ export default function AdmissionsPage() {
                     </div>
                 </div>
                 <button
+                    type="button"
                     onClick={() => router.push('/login')}
                     className="text-xs font-semibold text-blue-700 hover:text-blue-800"
                 >
@@ -69,7 +70,7 @@ export default function AdmissionsPage() {
             </header>
 
             {/* Hero Banner */}
-            <div className="py-12 px-6 text-center" style={{ background: '#0F172A' }}>
+            <div className="py-12 px-6 text-center bg-slate-900">
                 <div className="max-w-xl mx-auto text-white">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold text-blue-200 bg-blue-900/60 border border-blue-700/60 mb-4">
                         <ShieldCheck size={13} className="text-blue-400" />
@@ -103,9 +104,9 @@ export default function AdmissionsPage() {
                             </p>
 
                             <button
+                                type="button"
                                 onClick={() => router.push('/login')}
-                                className="mt-4 px-6 py-2.5 rounded-xl font-bold text-xs text-white"
-                                style={{ background: '#1D4ED8' }}
+                                className="mt-4 px-6 py-2.5 rounded-xl font-bold text-xs text-white bg-blue-700 hover:bg-blue-800"
                             >
                                 Return to Sign In
                             </button>
@@ -211,10 +212,7 @@ export default function AdmissionsPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-3 rounded-xl font-bold text-sm text-white transition-all shadow-sm flex items-center justify-center gap-2"
-                                style={{ background: '#1D4ED8' }}
-                                onMouseEnter={(e) => (e.currentTarget.style.background = '#1E3A8A')}
-                                onMouseLeave={(e) => (e.currentTarget.style.background = '#1D4ED8')}
+                                className="w-full py-3 rounded-xl font-bold text-sm text-white transition-all shadow-sm flex items-center justify-center gap-2 bg-blue-700 hover:bg-blue-800"
                             >
                                 {loading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

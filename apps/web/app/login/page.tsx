@@ -51,23 +51,21 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex" style={{ background: '#0F172A' }}>
+        <div className="min-h-screen flex bg-slate-900">
             {/* Left Panel: Institutional Brand & Credibility */}
             <div className="hidden lg:flex flex-1 flex-col justify-between p-16 relative overflow-hidden">
                 {/* Subtle trust lighting */}
                 <div 
-                    className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-25 filter blur-3xl"
-                    style={{ background: '#1D4ED8' }}
+                    className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-25 filter blur-3xl bg-blue-700"
                 />
                 <div 
-                    className="absolute -bottom-32 right-0 w-96 h-96 rounded-full opacity-20 filter blur-3xl"
-                    style={{ background: '#0284C7' }}
+                    className="absolute -bottom-32 right-0 w-96 h-96 rounded-full opacity-20 filter blur-3xl bg-sky-600"
                 />
 
                 {/* Brand Header */}
                 <div className="relative z-10 flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: '#1D4ED8' }}>
-                        <GraduationCap size={24} className="text-white" />
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-blue-700 text-white">
+                        <GraduationCap size={24} />
                     </div>
                     <div>
                         <span className="text-white font-bold text-lg tracking-tight">UniPortal</span>
@@ -123,8 +121,8 @@ export default function LoginPage() {
                 <div className="w-full max-w-sm">
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex items-center gap-3 mb-8">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#1D4ED8' }}>
-                            <GraduationCap size={20} className="text-white" />
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-700 text-white">
+                            <GraduationCap size={20} />
                         </div>
                         <div>
                             <span className="text-slate-900 font-bold text-base">UniPortal</span>
@@ -189,10 +187,7 @@ export default function LoginPage() {
                             id="login-submit-btn"
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all flex items-center justify-center gap-2"
-                            style={{ background: '#1D4ED8' }}
-                            onMouseEnter={(e) => (e.currentTarget.style.background = '#1E3A8A')}
-                            onMouseLeave={(e) => (e.currentTarget.style.background = '#1D4ED8')}
+                            className="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all flex items-center justify-center gap-2 bg-blue-700 hover:bg-blue-800"
                         >
                             {loading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
