@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     LayoutDashboard, BookOpen, ClipboardList, Calendar,
-    LogOut, User, Bell, ChevronRight, GraduationCap,
-    CheckCircle2, Clock, AlertCircle, Star, Zap, Check, X, Minus, Award, FileText, Download, CheckCheck, MapPin
+    Award, CheckCircle2, Clock, MapPin, Bell,
+    Check, X, Minus, Download, FileText, CheckCheck, Sparkles, AlertCircle
 } from 'lucide-react';
 import api from '@/lib/api';
+import Sidebar from '@/components/Sidebar';
+import StatCard from '@/components/StatCard';
+import StatusBadge from '@/components/StatusBadge';
 
 interface Course { id: string; title: string; code: string; credits: number; }
 interface CourseOffering {
@@ -67,13 +70,14 @@ interface ScheduleSlot {
 
 const DAYS_OF_WEEK = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'] as const;
 
-const COURSE_GRADIENTS = [
-    'from-violet-600 to-indigo-700',
-    'from-teal-500 to-emerald-700',
-    'from-rose-500 to-pink-700',
-    'from-amber-500 to-orange-700',
-    'from-sky-500 to-blue-700',
-    'from-purple-600 to-fuchsia-700',
+// Research-proven academic accent bars
+const COURSE_ACCENTS = [
+    { border: '#1D4ED8', badgeBg: '#EFF6FF', badgeText: '#1D4ED8' },
+    { border: '#0D9488', badgeBg: '#F0FDFA', badgeText: '#0D9488' },
+    { border: '#7C3AED', badgeBg: '#F5F3FF', badgeText: '#7C3AED' },
+    { border: '#D97706', badgeBg: '#FFFBEB', badgeText: '#D97706' },
+    { border: '#2563EB', badgeBg: '#EFF6FF', badgeText: '#2563EB' },
+    { border: '#E11D48', badgeBg: '#FFF1F2', badgeText: '#E11D48' },
 ];
 
 export default function DashboardPage() {
@@ -97,8 +101,6 @@ export default function DashboardPage() {
         .reduce((sum, e) => sum + (e.courseOffering.course.credits || 0), 0);
 
     const pendingAssignments = assignments.filter((a) => !a.mySubmission);
-    const submittedAssignments = assignments.filter((a) => a.mySubmission);
-
     const presentCount = attendance.filter((a) => a.status === 'PRESENT' || a.status === 'LATE').length;
     const attendanceRate = attendance.length > 0 ? Math.round((presentCount / attendance.length) * 100) : 100;
     const unreadNotifCount = notifications.filter(n => !n.isRead).length;
@@ -133,11 +135,6 @@ export default function DashboardPage() {
         fetchData();
     }, [router]);
 
-    const handleLogout = () => {
-        localStorage.clear();
-        router.push('/login');
-    };
-
     const handleMarkNotifRead = async (id: string) => {
         try {
             await api.patch(`/notifications/${id}/read`);
@@ -170,136 +167,65 @@ export default function DashboardPage() {
         }
     };
 
-    const getDueDateLabel = (dueDate: string | null) => {
+    const getDueDateBadge = (dueDate: string | null) => {
         if (!dueDate) return null;
         const due = new Date(dueDate);
         const now = new Date();
-        const diffMs = due.getTime() - now.getTime();
-        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        if (diffDays < 0) return { label: 'Overdue', color: 'text-red-400 bg-red-500/10 border-red-500/20' };
-        if (diffDays === 0) return { label: 'Due Today', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' };
-        if (diffDays <= 3) return { label: `${diffDays}d left`, color: 'text-orange-400 bg-orange-500/10 border-orange-500/20' };
-        return { label: due.toLocaleDateString(), color: 'text-slate-400 bg-slate-500/10 border-slate-500/20' };
+        const diffDays = Math.ceil((due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) return { label: 'Overdue', bg: '#FEE2E2', text: '#B91C1C', border: '#FCA5A5' };
+        if (diffDays === 0) return { label: 'Due Today', bg: '#FEF9C3', text: '#A16207', border: '#FDE047' };
+        if (diffDays <= 3) return { label: `${diffDays}d left`, bg: '#FFEDD5', text: '#C2410C', border: '#FDBA74' };
+        return { label: due.toLocaleDateString(), bg: '#F1F5F9', text: '#475569', border: '#CBD5E1' };
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#0f0f1a] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin" />
-                    <p className="text-slate-400 text-sm">Loading your dashboard…</p>
+            <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8FAFC' }}>
+                <div className="text-center">
+                    <div className="spinner w-8 h-8 mx-auto mb-3" />
+                    <p className="text-sm font-medium text-slate-500">Loading student portal…</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-[#0f0f1a] flex text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-                ::-webkit-scrollbar { width: 4px; }
-                ::-webkit-scrollbar-track { background: transparent; }
-                ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-                .glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.07); }
-                .glass-hover:hover { background: rgba(255,255,255,0.07); }
-                .stat-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
-                .course-card:hover .card-arrow { transform: translateX(4px); }
-                .nav-active { background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(99,102,241,0.15)); border-color: rgba(139,92,246,0.3); }
-            `}</style>
+        <div className="min-h-screen flex" style={{ background: '#F8FAFC' }}>
+            <Sidebar role="STUDENT" email={email} />
 
-            {/* Sidebar */}
-            <aside className="w-64 flex-shrink-0 flex flex-col border-r border-white/5" style={{ background: 'rgba(15,15,26,0.95)' }}>
-                {/* Logo */}
-                <div className="p-6 border-b border-white/5">
-                    <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
-                            <GraduationCap size={18} />
-                        </div>
-                        <div>
-                            <h1 className="text-base font-bold text-white">UniPortal</h1>
-                            <p className="text-[10px] text-slate-500">Student Portal</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Nav */}
-                <nav className="flex-1 p-4 space-y-1">
-                    {[
-                        { icon: LayoutDashboard, label: 'Dashboard', id: 'courses' },
-                        { icon: BookOpen, label: 'My Courses', id: 'courses' },
-                        { icon: ClipboardList, label: 'Assignments', id: 'assignments' },
-                        { icon: Calendar, label: 'Schedule', id: 'schedule' },
-                        { icon: CheckCircle2, label: 'Attendance', id: 'attendance' },
-                        { icon: Award, label: 'Transcript & GPA', id: 'transcript' },
-                    ].map(({ icon: Icon, label, id }) => (
-                        <a
-                            key={label}
-                            href="#"
-                            onClick={(e) => { e.preventDefault(); setActiveTab(id as any); }}
-                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all border ${activeTab === id ? 'nav-active text-violet-300 border-violet-500/30' : 'text-slate-400 border-transparent glass-hover'}`}
-                        >
-                            <Icon size={17} />
-                            {label}
-                        </a>
-                    ))}
-                </nav>
-
-                {/* User info */}
-                <div className="p-4 border-t border-white/5">
-                    <div className="flex items-center gap-3 px-3 py-2 mb-2">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
-                            {email.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="min-w-0">
-                            <p className="text-xs font-medium text-white truncate">Student</p>
-                            <p className="text-[10px] text-slate-500 truncate">{email}</p>
-                        </div>
-                    </div>
-                    <button
-                        id="student-logout-btn"
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 rounded-xl hover:bg-red-500/10 transition-colors"
-                    >
-                        <LogOut size={15} />
-                        Sign Out
-                    </button>
-                </div>
-            </aside>
-
-            {/* Main */}
-            <main className="flex-1 overflow-auto">
-                {/* Top Header */}
-                <header className="sticky top-0 z-10 border-b border-white/5 px-8 py-4 flex items-center justify-between" style={{ background: 'rgba(15,15,26,0.8)', backdropFilter: 'blur(20px)' }}>
+            <div className="flex-1 flex flex-col min-w-0">
+                {/* Header */}
+                <header className="h-16 flex-shrink-0 bg-white border-b border-slate-200 px-8 flex items-center justify-between shadow-xs">
                     <div>
-                        <h2 className="text-xl font-bold text-white">My Dashboard</h2>
-                        <p className="text-xs text-slate-500 mt-0.5">Welcome back — here's what's happening</p>
+                        <h1 className="text-lg font-bold text-slate-900">Student Portal</h1>
+                        <p className="text-xs text-slate-500">Academic Progress & Dashboard</p>
                     </div>
+
                     <div className="flex items-center gap-3 relative">
-                        {/* Notifications Bell */}
+                        {/* Notification Bell */}
                         <div className="relative">
                             <button
                                 onClick={() => setShowNotifDropdown(!showNotifDropdown)}
-                                className="relative p-2 rounded-xl glass glass-hover transition-all"
+                                className="w-9 h-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 flex items-center justify-center relative transition-colors"
                             >
-                                <Bell size={17} className="text-slate-400" />
+                                <Bell size={16} />
                                 {unreadNotifCount > 0 && (
-                                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-violet-600 rounded-full text-[9px] flex items-center justify-center font-bold">
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-600 rounded-full text-[9px] text-white flex items-center justify-center font-bold">
                                         {unreadNotifCount}
                                     </span>
                                 )}
                             </button>
 
-                            {/* Notifications Dropdown Panel */}
                             {showNotifDropdown && (
-                                <div className="absolute right-0 mt-2 w-80 glass rounded-2xl p-4 shadow-2xl z-50 border border-white/10 space-y-3" style={{ background: 'rgba(20,20,35,0.95)', backdropFilter: 'blur(25px)' }}>
-                                    <div className="flex items-center justify-between border-b border-white/10 pb-2">
-                                        <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                                            <Bell size={14} className="text-violet-400" /> Notifications ({unreadNotifCount} new)
-                                        </h4>
+                                <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-4 space-y-3">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                                        <span className="text-xs font-bold text-slate-900">
+                                            Notifications ({unreadNotifCount} unread)
+                                        </span>
                                         {unreadNotifCount > 0 && (
                                             <button
                                                 onClick={handleMarkAllRead}
-                                                className="text-[10px] text-violet-400 hover:text-violet-300 font-semibold flex items-center gap-1"
+                                                className="text-[11px] text-blue-700 hover:text-blue-800 font-semibold flex items-center gap-1"
                                             >
                                                 <CheckCheck size={12} /> Mark all read
                                             </button>
@@ -307,20 +233,24 @@ export default function DashboardPage() {
                                     </div>
                                     <div className="max-h-72 overflow-y-auto space-y-2">
                                         {notifications.length === 0 ? (
-                                            <p className="text-xs text-slate-500 text-center py-4">No notifications yet.</p>
+                                            <p className="text-xs text-slate-400 text-center py-4">No notifications.</p>
                                         ) : (
                                             notifications.map((n) => (
                                                 <div
                                                     key={n.id}
                                                     onClick={() => handleMarkNotifRead(n.id)}
-                                                    className={`p-3 rounded-xl text-xs space-y-1 cursor-pointer transition-all border ${n.isRead ? 'bg-white/5 border-transparent opacity-60' : 'bg-violet-600/10 border-violet-500/30'}`}
+                                                    className={`p-3 rounded-xl text-xs space-y-1 cursor-pointer transition-all border ${
+                                                        n.isRead ? 'bg-slate-50 border-slate-100 opacity-70' : 'bg-blue-50/50 border-blue-100'
+                                                    }`}
                                                 >
                                                     <div className="flex items-center justify-between">
-                                                        <p className="font-semibold text-white">{n.title}</p>
-                                                        {!n.isRead && <span className="w-2 h-2 rounded-full bg-violet-500" />}
+                                                        <p className="font-semibold text-slate-900">{n.title}</p>
+                                                        {!n.isRead && <span className="w-2 h-2 rounded-full bg-blue-600" />}
                                                     </div>
-                                                    <p className="text-[11px] text-slate-300">{n.message}</p>
-                                                    <p className="text-[9px] text-slate-500">{new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                                                    <p className="text-slate-600">{n.message}</p>
+                                                    <p className="text-[10px] text-slate-400">
+                                                        {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </p>
                                                 </div>
                                             ))
                                         )}
@@ -329,86 +259,121 @@ export default function DashboardPage() {
                             )}
                         </div>
 
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
+                        <div className="w-8 h-8 rounded-full bg-blue-700 text-white flex items-center justify-center text-xs font-bold">
                             {email.charAt(0).toUpperCase()}
                         </div>
                     </div>
                 </header>
 
-                <div className="p-8">
-                    {/* Stats */}
+                {/* Main Content */}
+                <main className="flex-1 p-8 overflow-auto animate-fade-up">
+                    {/* Bento Stat Row */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        {[
-                            { label: 'Cumulative GPA', value: gpaData?.gpa !== undefined ? gpaData.gpa.toFixed(2) : 'N/A', icon: Award, color: 'from-amber-500 to-orange-600' },
-                            { label: 'Total Credits', value: totalCredits, icon: Star, color: 'from-violet-600 to-indigo-600' },
-                            { label: 'Assignments Due', value: pendingAssignments.length, icon: Clock, color: 'from-amber-600 to-orange-600' },
-                            { label: 'Attendance Rate', value: `${attendanceRate}%`, icon: CheckCircle2, color: 'from-emerald-600 to-teal-600' },
-                        ].map(({ label, value, icon: Icon, color }) => (
-                            <div key={label} className="stat-card rounded-2xl p-5 relative overflow-hidden group">
-                                <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-5 transition-opacity`} />
-                                <div className={`inline-flex p-2 rounded-xl bg-gradient-to-br ${color} mb-3`}>
-                                    <Icon size={15} className="text-white" />
-                                </div>
-                                <p className="text-2xl font-bold text-white">{value}</p>
-                                <p className="text-xs text-slate-500 mt-1">{label}</p>
-                            </div>
-                        ))}
+                        <StatCard
+                            label="Cumulative GPA"
+                            value={gpaData?.gpa !== undefined ? `${gpaData.gpa.toFixed(2)} / 4.00` : 'N/A'}
+                            icon={Award}
+                            iconBg="#F59E0B"
+                            subLabel="Academic Standing"
+                        />
+                        <StatCard
+                            label="Earned Credits"
+                            value={`${totalCredits} Cr`}
+                            icon={BookOpen}
+                            iconBg="#1D4ED8"
+                            subLabel="Completed & Active"
+                        />
+                        <StatCard
+                            label="Pending Assignments"
+                            value={pendingAssignments.length}
+                            icon={Clock}
+                            iconBg="#EA580C"
+                            subLabel="Due this semester"
+                        />
+                        <StatCard
+                            label="Attendance Rate"
+                            value={`${attendanceRate}%`}
+                            icon={CheckCircle2}
+                            iconBg="#16A34A"
+                            subLabel="Verified presence"
+                        />
                     </div>
 
-                    {/* Tab switcher */}
-                    <div className="flex gap-1 mb-6 p-1 rounded-xl glass w-fit overflow-x-auto">
+                    {/* Navigation Tabs */}
+                    <div className="flex gap-1.5 p-1 bg-slate-200/70 rounded-xl w-fit mb-6 overflow-x-auto">
                         {(['courses', 'assignments', 'schedule', 'attendance', 'transcript'] as const).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-2 rounded-lg text-sm font-medium transition-all capitalize whitespace-nowrap ${activeTab === tab ? 'bg-violet-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+                                className={`px-4 py-2 rounded-lg text-xs font-bold capitalize transition-all whitespace-nowrap ${
+                                    activeTab === tab
+                                        ? 'bg-white text-slate-900 shadow-xs'
+                                        : 'text-slate-600 hover:text-slate-900'
+                                }`}
                             >
-                                {tab === 'courses' ? `Courses (${enrollments.length})` : tab === 'assignments' ? `Assignments (${assignments.length})` : tab === 'schedule' ? `Schedule` : tab === 'attendance' ? `Attendance (${attendance.length})` : `Transcript & GPA`}
+                                {tab === 'courses' ? `Courses (${enrollments.length})`
+                                : tab === 'assignments' ? `Assignments (${assignments.length})`
+                                : tab === 'schedule' ? 'Weekly Schedule'
+                                : tab === 'attendance' ? `Attendance (${attendance.length})`
+                                : 'Official Transcript'}
                             </button>
                         ))}
                     </div>
 
-                    {/* Courses tab */}
+                    {/* Courses Tab */}
                     {activeTab === 'courses' && (
                         <div>
                             {enrollments.length === 0 ? (
-                                <div className="glass rounded-2xl p-16 text-center">
-                                    <BookOpen size={40} className="text-slate-700 mx-auto mb-4" />
-                                    <p className="text-slate-500">You are not enrolled in any courses yet.</p>
+                                <div className="card p-16 text-center">
+                                    <BookOpen size={40} className="mx-auto text-slate-300 mb-3" />
+                                    <p className="text-sm font-semibold text-slate-700">No course enrollments found</p>
+                                    <p className="text-xs text-slate-400 mt-1">Contact the registrar office for semester registration.</p>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {enrollments.map((e, idx) => {
-                                        const grad = COURSE_GRADIENTS[idx % COURSE_GRADIENTS.length];
+                                        const accent = COURSE_ACCENTS[idx % COURSE_ACCENTS.length];
                                         return (
-                                            <div key={e.id} className="glass rounded-2xl overflow-hidden group hover:border-violet-500/30 transition-all duration-300 flex flex-col">
-                                                <div className={`p-6 bg-gradient-to-br ${grad} relative`}>
-                                                    <span className="text-[10px] font-bold tracking-wider uppercase bg-black/30 text-white/90 px-2.5 py-1 rounded-full backdrop-blur-sm">
-                                                        {e.courseOffering.course.code}
-                                                    </span>
-                                                    <h3 className="text-lg font-bold text-white mt-3 line-clamp-1">
-                                                        {e.courseOffering.course.title}
-                                                    </h3>
-                                                    <p className="text-xs text-white/70 mt-1">{e.courseOffering.semester.name}</p>
-                                                </div>
-                                                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                                                    <div className="space-y-2">
-                                                        <div className="flex justify-between text-xs text-slate-400">
-                                                            <span>Instructor</span>
-                                                            <span className="text-white font-medium">{e.courseOffering.teacher?.user?.email || 'Faculty'}</span>
+                                            <div key={e.id} className="card card-hover overflow-hidden flex flex-col">
+                                                <div className="h-2" style={{ background: accent.border }} />
+                                                <div className="p-6 flex-1 flex flex-col justify-between">
+                                                    <div>
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <span
+                                                                className="text-xs font-bold px-2 py-0.5 rounded-md font-mono"
+                                                                style={{ background: accent.badgeBg, color: accent.badgeText }}
+                                                            >
+                                                                {e.courseOffering.course.code}
+                                                            </span>
+                                                            <span className="text-xs font-semibold text-slate-400">
+                                                                {e.courseOffering.course.credits} Credits
+                                                            </span>
                                                         </div>
-                                                        <div className="flex justify-between text-xs text-slate-400">
-                                                            <span>Credits</span>
-                                                            <span className="text-white font-medium">{e.courseOffering.course.credits} Cr</span>
+                                                        <h3 className="text-base font-bold text-slate-900 leading-snug line-clamp-2">
+                                                            {e.courseOffering.course.title}
+                                                        </h3>
+                                                        <p className="text-xs text-slate-500 mt-1">
+                                                            {e.courseOffering.semester.name}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="mt-6 pt-4 border-t border-slate-100 space-y-2 text-xs">
+                                                        <div className="flex justify-between text-slate-600">
+                                                            <span>Instructor:</span>
+                                                            <span className="font-semibold text-slate-800">
+                                                                {e.courseOffering.teacher?.user?.email || 'Faculty'}
+                                                            </span>
                                                         </div>
-                                                        <div className="flex justify-between text-xs text-slate-400">
-                                                            <span>Status</span>
-                                                            <span className="text-emerald-400 font-medium">{e.status}</span>
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="text-slate-600">Status:</span>
+                                                            <StatusBadge status={e.status} />
                                                         </div>
                                                         {e.letterGrade && (
-                                                            <div className="flex justify-between text-xs text-slate-400 pt-2 border-t border-white/5">
-                                                                <span>Grade</span>
-                                                                <span className="text-amber-400 font-bold">{e.letterGrade} ({e.gradePoints} GP)</span>
+                                                            <div className="flex justify-between items-center pt-2 border-t border-slate-100">
+                                                                <span className="text-slate-600">Final Grade:</span>
+                                                                <span className="text-xs font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                                                    {e.letterGrade} ({e.gradePoints} GP)
+                                                                </span>
                                                             </div>
                                                         )}
                                                     </div>
@@ -423,126 +388,135 @@ export default function DashboardPage() {
 
                     {/* Schedule Tab */}
                     {activeTab === 'schedule' && (
-                        <div className="space-y-6">
-                            <div className="glass rounded-2xl p-6 border border-white/5">
-                                <h3 className="text-base font-bold text-white mb-2 flex items-center gap-2">
-                                    <Calendar className="text-violet-400" size={18} /> Weekly Class Schedule
-                                </h3>
-                                <p className="text-xs text-slate-400 mb-6">Your weekly timetable for enrolled course offerings.</p>
+                        <div className="card p-6">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Calendar size={18} className="text-blue-700" />
+                                <h3 className="text-base font-bold text-slate-900">Weekly Class Timetable</h3>
+                            </div>
+                            <p className="text-xs text-slate-500 mb-6">Regular lecture schedule for enrolled offerings.</p>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                                    {DAYS_OF_WEEK.map((day) => {
-                                        const daySlots = schedule.filter((s) => s.dayOfWeek === day);
-                                        return (
-                                            <div key={day} className="glass rounded-xl p-4 border border-white/5 flex flex-col space-y-3">
-                                                <div className="border-b border-white/10 pb-2 flex items-center justify-between">
-                                                    <span className="text-xs font-extrabold text-violet-300 capitalize">{day.toLowerCase()}</span>
-                                                    <span className="text-[10px] text-slate-500">{daySlots.length} classes</span>
-                                                </div>
-
-                                                {daySlots.length === 0 ? (
-                                                    <div className="flex-1 flex items-center justify-center py-8 text-[11px] text-slate-600">
-                                                        No classes
-                                                    </div>
-                                                ) : (
-                                                    daySlots.map((slot) => (
-                                                        <div key={slot.id} className="p-3 rounded-xl bg-violet-600/10 border border-violet-500/20 space-y-1.5">
-                                                            <div className="flex justify-between items-start">
-                                                                <span className="text-[10px] font-bold text-violet-400 bg-violet-500/20 px-1.5 py-0.5 rounded">
-                                                                    {slot.courseOffering?.course?.code}
-                                                                </span>
-                                                                <span className="text-[10px] text-slate-400 font-mono">
-                                                                    {slot.startTime}-{slot.endTime}
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-xs font-bold text-white truncate">{slot.courseOffering?.course?.title}</p>
-                                                            {slot.room && (
-                                                                <p className="text-[10px] text-slate-300 flex items-center gap-1 mt-1">
-                                                                    <MapPin size={10} className="text-emerald-400" /> {slot.room}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    ))
-                                                )}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                                {DAYS_OF_WEEK.map((day) => {
+                                    const slots = schedule.filter(s => s.dayOfWeek === day);
+                                    return (
+                                        <div key={day} className="rounded-xl border border-slate-200 bg-slate-50/50 p-3 flex flex-col space-y-3">
+                                            <div className="border-b border-slate-200 pb-2 flex items-center justify-between">
+                                                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">{day.slice(0, 3)}</span>
+                                                <span className="text-[10px] font-semibold text-slate-400">{slots.length}</span>
                                             </div>
-                                        );
-                                    })}
-                                </div>
+
+                                            {slots.length === 0 ? (
+                                                <div className="flex-1 flex items-center justify-center py-6 text-[11px] text-slate-400">
+                                                    No classes
+                                                </div>
+                                            ) : (
+                                                slots.map((s) => (
+                                                    <div key={s.id} className="p-2.5 rounded-lg border border-blue-200 bg-blue-50/70 space-y-1">
+                                                        <div className="flex justify-between items-start">
+                                                            <span className="text-[10px] font-bold text-blue-800 bg-white px-1.5 py-0.5 rounded border border-blue-200">
+                                                                {s.courseOffering?.course?.code}
+                                                            </span>
+                                                            <span className="text-[10px] font-mono text-slate-600">
+                                                                {s.startTime}-{s.endTime}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs font-bold text-slate-900 truncate">
+                                                            {s.courseOffering?.course?.title}
+                                                        </p>
+                                                        {s.room && (
+                                                            <p className="text-[10px] text-slate-600 flex items-center gap-1">
+                                                                <MapPin size={10} className="text-blue-700" /> {s.room}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
 
-                    {/* Assignments tab */}
+                    {/* Assignments Tab */}
                     {activeTab === 'assignments' && (
                         <div className="space-y-4">
                             {assignments.length === 0 ? (
-                                <div className="glass rounded-2xl p-16 text-center">
-                                    <ClipboardList size={40} className="text-slate-700 mx-auto mb-4" />
-                                    <p className="text-slate-500">No assignments posted for your courses.</p>
+                                <div className="card p-16 text-center">
+                                    <ClipboardList size={40} className="mx-auto text-slate-300 mb-3" />
+                                    <p className="text-sm font-semibold text-slate-700">No active assignments</p>
+                                    <p className="text-xs text-slate-400 mt-1">Check back later for coursework updates.</p>
                                 </div>
                             ) : (
                                 assignments.map((asg) => {
-                                    const dueBadge = getDueDateLabel(asg.dueDate);
+                                    const badge = getDueDateBadge(asg.dueDate);
                                     const isSubmitted = !!asg.mySubmission;
                                     const isGraded = asg.mySubmission?.grade !== null && asg.mySubmission?.grade !== undefined;
 
                                     return (
-                                        <div key={asg.id} className="glass rounded-2xl p-6 transition-all hover:border-white/10">
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-4 mb-4">
+                                        <div key={asg.id} className="card card-hover p-6">
+                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
                                                 <div>
-                                                    <div className="flex items-center gap-3 mb-1">
-                                                        <span className="text-xs font-semibold text-violet-400 bg-violet-500/10 px-2.5 py-0.5 rounded-full border border-violet-500/20">
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
                                                             {asg.courseOffering.course.code}
                                                         </span>
-                                                        {dueBadge && (
-                                                            <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${dueBadge.color}`}>
-                                                                {dueBadge.label}
+                                                        {badge && (
+                                                            <span
+                                                                className="text-xs font-semibold px-2 py-0.5 rounded border"
+                                                                style={{ background: badge.bg, color: badge.text, borderColor: badge.border }}
+                                                            >
+                                                                {badge.label}
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <h3 className="text-base font-bold text-white">{asg.title}</h3>
-                                                    {asg.description && <p className="text-xs text-slate-400 mt-1">{asg.description}</p>}
+                                                    <h3 className="text-base font-bold text-slate-900">{asg.title}</h3>
+                                                    {asg.description && <p className="text-xs text-slate-600 mt-1">{asg.description}</p>}
                                                 </div>
+
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xs text-slate-500">Max Score: <strong className="text-white">{asg.maxScore}</strong></span>
+                                                    <span className="text-xs text-slate-500">Max Score: <strong className="text-slate-900">{asg.maxScore}</strong></span>
                                                     {isGraded ? (
-                                                        <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-bold rounded-xl">
-                                                            Graded: {asg.mySubmission?.grade} / {asg.maxScore}
+                                                        <span className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold rounded-lg">
+                                                            Score: {asg.mySubmission?.grade} / {asg.maxScore}
                                                         </span>
                                                     ) : isSubmitted ? (
-                                                        <span className="px-3 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs font-bold rounded-xl">
+                                                        <span className="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold rounded-lg">
                                                             Submitted
                                                         </span>
                                                     ) : (
-                                                        <span className="px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-bold rounded-xl">
-                                                            Pending
+                                                        <span className="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold rounded-lg">
+                                                            Pending Submission
                                                         </span>
                                                     )}
                                                 </div>
                                             </div>
 
                                             {isSubmitted ? (
-                                                <div className="bg-white/5 rounded-xl p-4 text-xs space-y-2">
-                                                    <p className="text-slate-400"><strong>Submission:</strong> {asg.mySubmission?.id}</p>
+                                                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 text-xs space-y-1.5">
+                                                    <p className="text-slate-600"><strong>Submission Reference:</strong> {asg.mySubmission?.id}</p>
                                                     {asg.mySubmission?.feedback && (
-                                                        <p className="text-emerald-300"><strong>Teacher Feedback:</strong> {asg.mySubmission.feedback}</p>
+                                                        <p className="text-emerald-800 font-medium"><strong>Instructor Feedback:</strong> {asg.mySubmission.feedback}</p>
                                                     )}
                                                 </div>
                                             ) : (
                                                 <div className="flex flex-col sm:flex-row gap-3">
                                                     <input
                                                         type="text"
-                                                        placeholder="Paste submission link or content..."
+                                                        placeholder="Provide repository link, file URL, or answer text…"
                                                         value={submitText[asg.id] || ''}
                                                         onChange={(e) => setSubmitText({ ...submitText, [asg.id]: e.target.value })}
-                                                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500"
+                                                        className="input-field flex-1"
                                                     />
                                                     <button
                                                         disabled={submitting === asg.id || !submitText[asg.id]}
                                                         onClick={() => handleSubmitAssignment(asg.id)}
-                                                        className="px-5 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 disabled:opacity-50 text-white text-xs font-semibold rounded-xl transition-all shadow-lg shadow-violet-600/20"
+                                                        className="px-5 py-2.5 rounded-xl font-semibold text-xs text-white transition-all disabled:opacity-50"
+                                                        style={{ background: '#1D4ED8' }}
+                                                        onMouseEnter={(e) => (e.currentTarget.style.background = '#1E3A8A')}
+                                                        onMouseLeave={(e) => (e.currentTarget.style.background = '#1D4ED8')}
                                                     >
-                                                        {submitting === asg.id ? 'Submitting...' : 'Submit'}
+                                                        {submitting === asg.id ? 'Submitting…' : 'Submit Assignment'}
                                                     </button>
                                                 </div>
                                             )}
@@ -553,48 +527,27 @@ export default function DashboardPage() {
                         </div>
                     )}
 
-                    {/* Attendance tab */}
+                    {/* Attendance Tab */}
                     {activeTab === 'attendance' && (
-                        <div className="space-y-4">
+                        <div className="card p-6">
+                            <h3 className="text-base font-bold text-slate-900 mb-4">Verified Attendance Records</h3>
                             {attendance.length === 0 ? (
-                                <div className="glass rounded-2xl p-16 text-center">
-                                    <Calendar size={40} className="text-slate-700 mx-auto mb-4" />
-                                    <p className="text-slate-500">No attendance sessions logged for your courses yet.</p>
-                                </div>
+                                <p className="text-xs text-slate-400 py-8 text-center">No attendance sessions recorded yet.</p>
                             ) : (
-                                <div className="glass rounded-2xl p-6">
-                                    <h3 className="text-base font-bold text-white mb-4">Attendance History</h3>
-                                    <div className="divide-y divide-white/5">
-                                        {attendance.map((rec) => (
-                                            <div key={rec.id} className="py-3 flex items-center justify-between">
-                                                <div>
-                                                    <p className="text-sm font-semibold text-white">
-                                                        {rec.session?.courseOffering?.course?.title} ({rec.session?.courseOffering?.course?.code})
-                                                    </p>
-                                                    <p className="text-xs text-slate-400 mt-0.5">
-                                                        Date: {new Date(rec.session?.date).toLocaleDateString()} {rec.session?.topic ? `• Topic: ${rec.session.topic}` : ''}
-                                                    </p>
-                                                </div>
-                                                <div>
-                                                    {rec.status === 'PRESENT' && (
-                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold rounded-full">
-                                                            <Check size={12} /> Present
-                                                        </span>
-                                                    )}
-                                                    {rec.status === 'LATE' && (
-                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold rounded-full">
-                                                            <Minus size={12} /> Late
-                                                        </span>
-                                                    )}
-                                                    {rec.status === 'ABSENT' && (
-                                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/20 text-xs font-semibold rounded-full">
-                                                            <X size={12} /> Absent
-                                                        </span>
-                                                    )}
-                                                </div>
+                                <div className="divide-y divide-slate-100">
+                                    {attendance.map((rec) => (
+                                        <div key={rec.id} className="py-3 flex items-center justify-between">
+                                            <div>
+                                                <p className="text-sm font-semibold text-slate-900">
+                                                    {rec.session?.courseOffering?.course?.title} ({rec.session?.courseOffering?.course?.code})
+                                                </p>
+                                                <p className="text-xs text-slate-500 mt-0.5">
+                                                    Session Date: {new Date(rec.session?.date).toLocaleDateString()} {rec.session?.topic ? `• Topic: ${rec.session.topic}` : ''}
+                                                </p>
                                             </div>
-                                        ))}
-                                    </div>
+                                            <StatusBadge status={rec.status} />
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
@@ -603,72 +556,72 @@ export default function DashboardPage() {
                     {/* Transcript Tab */}
                     {activeTab === 'transcript' && (
                         <div className="space-y-6">
-                            {/* Header Summary */}
-                            <div className="glass rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 border border-white/5 bg-gradient-to-r from-violet-900/20 to-indigo-900/20">
-                                <div className="space-y-1">
-                                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                        <Award className="text-amber-400" size={20} /> Academic Transcript
+                            <div className="card p-6 bg-gradient-to-r from-blue-900 to-indigo-900 text-white flex flex-col md:flex-row items-center justify-between gap-6 border-0">
+                                <div>
+                                    <h3 className="text-lg font-bold flex items-center gap-2 text-white">
+                                        <Award className="text-amber-400" size={20} /> Official University Transcript
                                     </h3>
-                                    <p className="text-xs text-slate-400">Official record of completed courses, letter grades, and grade points.</p>
+                                    <p className="text-xs text-blue-200 mt-1">Official semester credit breakdown, GPA calculation, and course grades.</p>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <div className="text-right">
-                                        <p className="text-xs text-slate-400">Cumulative GPA</p>
-                                        <p className="text-2xl font-extrabold text-amber-400">{gpaData?.gpa !== undefined ? gpaData.gpa.toFixed(2) : '0.00'} / 4.00</p>
+                                        <p className="text-xs text-blue-200">Cumulative GPA</p>
+                                        <p className="text-3xl font-black text-amber-400 tabular">
+                                            {gpaData?.gpa !== undefined ? gpaData.gpa.toFixed(2) : '0.00'} / 4.00
+                                        </p>
                                     </div>
                                     <button
                                         onClick={() => window.print()}
-                                        className="px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-xs font-semibold rounded-xl transition-all flex items-center gap-2 border border-white/10"
+                                        className="px-4 py-2 bg-white text-slate-900 text-xs font-bold rounded-xl shadow-xs hover:bg-slate-100 transition-colors flex items-center gap-2"
                                     >
-                                        <Download size={14} /> Print Transcript
+                                        <Download size={14} /> Print
                                     </button>
                                 </div>
                             </div>
 
-                            {/* Transcript Table */}
-                            <div className="glass rounded-2xl p-6 border border-white/5">
-                                <h4 className="text-sm font-bold text-white mb-4">Completed Courses</h4>
+                            <div className="card overflow-hidden">
+                                <div className="p-4 border-b border-slate-100 font-bold text-sm text-slate-900">
+                                    Completed Course Records
+                                </div>
                                 {!gpaData || gpaData.breakdown.length === 0 ? (
-                                    <p className="text-xs text-slate-500 py-8 text-center">No graded courses recorded on transcript yet.</p>
+                                    <p className="text-xs text-slate-400 py-8 text-center">No graded courses recorded on transcript yet.</p>
                                 ) : (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-left text-xs">
-                                            <thead>
-                                                <tr className="border-b border-white/10 text-slate-400">
-                                                    <th className="pb-3 font-semibold">Course Code</th>
-                                                    <th className="pb-3 font-semibold">Course Title</th>
-                                                    <th className="pb-3 font-semibold">Semester</th>
-                                                    <th className="pb-3 font-semibold">Credits</th>
-                                                    <th className="pb-3 font-semibold">Score</th>
-                                                    <th className="pb-3 font-semibold">Grade</th>
-                                                    <th className="pb-3 font-semibold">Grade Points</th>
+                                    <table className="w-full text-left text-xs">
+                                        <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-semibold">
+                                            <tr>
+                                                <th className="p-3.5">Code</th>
+                                                <th className="p-3.5">Course Title</th>
+                                                <th className="p-3.5">Semester</th>
+                                                <th className="p-3.5">Credits</th>
+                                                <th className="p-3.5">Numeric</th>
+                                                <th className="p-3.5">Grade</th>
+                                                <th className="p-3.5">Grade Points</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {gpaData.breakdown.map((row) => (
+                                                <tr key={row.id} className="hover:bg-slate-50/70">
+                                                    <td className="p-3.5 font-bold font-mono text-blue-700">{row.courseCode}</td>
+                                                    <td className="p-3.5 font-semibold text-slate-800">{row.courseTitle}</td>
+                                                    <td className="p-3.5 text-slate-500">{row.semester}</td>
+                                                    <td className="p-3.5 text-slate-700">{row.credits} Cr</td>
+                                                    <td className="p-3.5 text-slate-700">{row.grade}%</td>
+                                                    <td className="p-3.5">
+                                                        <span className="font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                                            {row.letterGrade}
+                                                        </span>
+                                                    </td>
+                                                    <td className="p-3.5 font-bold text-slate-900">{row.gradePoints}</td>
                                                 </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-white/5">
-                                                {gpaData.breakdown.map((row) => (
-                                                    <tr key={row.id} className="hover:bg-white/5">
-                                                        <td className="py-3 font-bold text-violet-300">{row.courseCode}</td>
-                                                        <td className="py-3 text-white font-medium">{row.courseTitle}</td>
-                                                        <td className="py-3 text-slate-400">{row.semester}</td>
-                                                        <td className="py-3 text-slate-300">{row.credits} Cr</td>
-                                                        <td className="py-3 text-slate-300">{row.grade}%</td>
-                                                        <td className="py-3">
-                                                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                                                {row.letterGrade}
-                                                            </span>
-                                                        </td>
-                                                        <td className="py-3 font-bold text-emerald-400">{row.gradePoints.toFixed(1)}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                            ))}
+                                        </tbody>
+                                    </table>
                                 )}
                             </div>
                         </div>
                     )}
-                </div>
-            </main>
+                </main>
+            </div>
         </div>
     );
 }

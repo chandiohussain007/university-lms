@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { GraduationCap, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
 import api from '@/lib/api';
 
 export default function AdmissionsPage() {
@@ -41,73 +41,194 @@ export default function AdmissionsPage() {
             });
             setSuccess(res.data);
         } catch (err: any) {
-            setError(err?.response?.data?.message ?? 'Application failed. Please try again.');
+            setError(err?.response?.data?.message ?? 'Application failed. Please check your information and try again.');
         } finally {
             setLoading(false);
         }
     }
 
-    const input = 'w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent';
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-            <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl p-10 border border-gray-100">
-                <div className="text-center mb-8">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                        <GraduationCap className="h-10 w-10 text-blue-600" />
+        <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+            {/* Header Navigation */}
+            <header className="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#1D4ED8' }}>
+                        <GraduationCap size={20} className="text-white" />
                     </div>
-                    <h1 className="mt-4 text-2xl font-extrabold text-gray-900">Admissions</h1>
-                    <p className="mt-1 text-sm text-gray-600">Apply for admission — no account needed</p>
+                    <div>
+                        <span className="font-bold text-slate-900 text-sm">UniPortal</span>
+                        <p className="text-[10px] text-slate-500">Admissions Portal</p>
+                    </div>
                 </div>
-                {success ? (
-                    <div className="text-center space-y-4">
-                        <CheckCircle2 className="mx-auto h-16 w-16 text-green-500" />
-                        <h2 className="text-xl font-bold text-gray-900">Application Submitted!</h2>
-                        <p className="text-gray-600">{success.message}</p>
-                        <p className="text-sm bg-blue-50 border border-blue-100 rounded-lg p-3 text-blue-800">
-                            Application code: <span className="font-mono font-bold">{success.applicationCode}</span>
-                        </p>
-                        <p className="text-xs text-gray-500">
-                            Once accepted, sign in with the email and password you provided.
-                        </p>
-                        <button onClick={() => router.push('/login')}
-                            className="mt-2 w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-colors">
-                            Go to Login
-                        </button>
+                <button
+                    onClick={() => router.push('/login')}
+                    className="text-xs font-semibold text-blue-700 hover:text-blue-800"
+                >
+                    Already have an account? Sign in →
+                </button>
+            </header>
+
+            {/* Hero Banner */}
+            <div className="py-12 px-6 text-center" style={{ background: '#0F172A' }}>
+                <div className="max-w-xl mx-auto text-white">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold text-blue-200 bg-blue-900/60 border border-blue-700/60 mb-4">
+                        <ShieldCheck size={13} className="text-blue-400" />
+                        Accredited Academic Degree Admissions
                     </div>
-                ) : (
-                    <form className="space-y-4" onSubmit={handleSubmit}>
-                        <input required placeholder="Full name" value={form.fullName}
-                            onChange={(e) => setForm({ ...form, fullName: e.target.value })} className={input} />
-                        <input required type="email" placeholder="Email address (this will be your login)" value={form.email}
-                            onChange={(e) => setForm({ ...form, email: e.target.value })} className={input} />
-                        <input required type="password" minLength={6} placeholder="Choose a password (min 6 characters)" value={form.password}
-                            onChange={(e) => setForm({ ...form, password: e.target.value })} className={input} />
-                        <select required value={form.facultyId}
-                            onChange={(e) => setForm({ ...form, facultyId: e.target.value, departmentId: '' })}
-                            className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-600">
-                            <option value="" disabled>Select faculty</option>
-                            {faculties.map((f: any) => <option key={f.id} value={f.id}>{f.name}</option>)}
-                        </select>
-                        <select value={form.departmentId} onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
-                            className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-600">
-                            <option value="">Program / Department (optional)</option>
-                            {depts.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
-                        </select>
-                        <textarea placeholder="Statement of purpose (optional)" rows={3} value={form.statementOfPurpose}
-                            onChange={(e) => setForm({ ...form, statementOfPurpose: e.target.value })} className={input} />
-                        {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md border border-red-200">{error}</div>}
-                        <button type="submit" disabled={loading}
-                            className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-500 disabled:opacity-70 transition-colors">
-                            {loading ? 'Submitting...' : 'Submit Application'}
-                        </button>
-                        <p className="text-center text-xs text-gray-500">
-                            Already have an account? <a href="/login" className="text-blue-600 font-medium">Sign in</a>
-                        </p>
-                    </form>
-                )}
+                    <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight mb-2">
+                        Apply for Admission
+                    </h1>
+                    <p className="text-slate-300 text-sm">
+                        Submit your student application online. Admission decisions generate student credentials automatically.
+                    </p>
+                </div>
+            </div>
+
+            {/* Application Card Container */}
+            <div className="max-w-2xl mx-auto px-4 -mt-6 pb-16">
+                <div className="card p-8 shadow-xl">
+                    {success ? (
+                        <div className="text-center py-6 space-y-4">
+                            <CheckCircle2 className="mx-auto h-16 w-16 text-emerald-600" />
+                            <h2 className="text-2xl font-extrabold text-slate-900">Application Submitted!</h2>
+                            <p className="text-sm text-slate-600 max-w-md mx-auto">{success.message}</p>
+                            
+                            <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/70 inline-block text-left my-2">
+                                <span className="text-xs font-medium text-slate-500">Official Tracking Code:</span>
+                                <p className="text-lg font-mono font-black text-blue-800">{success.applicationCode}</p>
+                            </div>
+
+                            <p className="text-xs text-slate-500">
+                                Once accepted by the admissions committee, you will be able to log in with your email and chosen password immediately.
+                            </p>
+
+                            <button
+                                onClick={() => router.push('/login')}
+                                className="mt-4 px-6 py-2.5 rounded-xl font-bold text-xs text-white"
+                                style={{ background: '#1D4ED8' }}
+                            >
+                                Return to Sign In
+                            </button>
+                        </div>
+                    ) : (
+                        <form className="space-y-4" onSubmit={handleSubmit}>
+                            <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mb-4">
+                                Personal & Academic Information
+                            </h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                                        Full Name
+                                    </label>
+                                    <input
+                                        required
+                                        placeholder="e.g. Eleanor Vance"
+                                        value={form.fullName}
+                                        onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                                        className="input-field"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                                        Institutional / Personal Email
+                                    </label>
+                                    <input
+                                        required
+                                        type="email"
+                                        placeholder="e.g. eleanor@example.com"
+                                        value={form.email}
+                                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                        className="input-field"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                                    Account Password (min. 6 characters)
+                                </label>
+                                <input
+                                    required
+                                    type="password"
+                                    minLength={6}
+                                    placeholder="••••••••"
+                                    value={form.password}
+                                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                                    className="input-field"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                                        Academic Faculty
+                                    </label>
+                                    <select
+                                        required
+                                        value={form.facultyId}
+                                        onChange={(e) => setForm({ ...form, facultyId: e.target.value, departmentId: '' })}
+                                        className="select-field"
+                                    >
+                                        <option value="" disabled>Select faculty</option>
+                                        {faculties.map((f: any) => <option key={f.id} value={f.id}>{f.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                                        Department / Major
+                                    </label>
+                                    <select
+                                        value={form.departmentId}
+                                        onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
+                                        className="select-field"
+                                    >
+                                        <option value="">Program / Department (optional)</option>
+                                        {depts.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                                    Statement of Purpose / Academic Objectives (optional)
+                                </label>
+                                <textarea
+                                    placeholder="Outline your background, learning goals, or prior coursework…"
+                                    rows={4}
+                                    value={form.statementOfPurpose}
+                                    onChange={(e) => setForm({ ...form, statementOfPurpose: e.target.value })}
+                                    className="input-field"
+                                />
+                            </div>
+
+                            {error && (
+                                <div className="text-xs p-3 rounded-lg border border-red-200 bg-red-50 text-red-700">
+                                    {error}
+                                </div>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-3 rounded-xl font-bold text-sm text-white transition-all shadow-sm flex items-center justify-center gap-2"
+                                style={{ background: '#1D4ED8' }}
+                                onMouseEnter={(e) => (e.currentTarget.style.background = '#1E3A8A')}
+                                onMouseLeave={(e) => (e.currentTarget.style.background = '#1D4ED8')}
+                            >
+                                {loading ? (
+                                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                ) : (
+                                    <>
+                                        Submit Application
+                                        <ArrowRight size={16} />
+                                    </>
+                                )}
+                            </button>
+                        </form>
+                    )}
+                </div>
             </div>
         </div>
     );
 }
-

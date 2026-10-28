@@ -1,15 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+    GraduationCap, Mail, Lock, ArrowRight,
+    BookOpen, Users, Building2, Award, CheckCircle2
+} from 'lucide-react';
 import api from '@/lib/api';
-import { GraduationCap, Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
 
 const DEMO_USERS = [
-    { label: 'Student 1', email: 'student1@university.edu', password: 'secret', role: 'STUDENT' },
-    { label: 'Professor Smith', email: 'prof.smith@university.edu', password: 'secret', role: 'TEACHER' },
-    { label: 'Admin', email: 'admin@university.edu', password: 'admin123', role: 'SUPER_ADMIN' },
-    { label: 'Staff', email: 'staff@university.edu', password: 'secret', role: 'STAFF' },
+    { label: 'Student', email: 'student1@university.edu', password: 'secret', role: 'STUDENT', badge: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+    { label: 'Professor Smith', email: 'prof.smith@university.edu', password: 'secret', role: 'TEACHER', badge: 'bg-blue-50 text-blue-700 border-blue-200' },
+    { label: 'Admin', email: 'admin@university.edu', password: 'admin123', role: 'SUPER_ADMIN', badge: 'bg-purple-50 text-purple-700 border-purple-200' },
+    { label: 'Staff Member', email: 'staff@university.edu', password: 'secret', role: 'STAFF', badge: 'bg-amber-50 text-amber-700 border-amber-200' },
 ];
 
 export default function LoginPage() {
@@ -33,9 +36,9 @@ export default function LoginPage() {
 
             if (role === 'STUDENT') router.push('/dashboard');
             else if (role === 'TEACHER') router.push('/teacher');
-            else router.push('/');
+            else router.push('/users');
         } catch {
-            setError('Invalid credentials. Please check your email and password.');
+            setError('Invalid credentials. Please verify your email and password.');
         } finally {
             setLoading(false);
         }
@@ -48,110 +51,136 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a16] flex" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-                .glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.07); }
-                .input-glass { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: white; transition: all 0.2s; }
-                .input-glass:focus { outline: none; border-color: rgba(139,92,246,0.5); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
-                .input-glass::placeholder { color: rgba(100,116,139,0.6); }
-                .demo-chip { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); transition: all 0.2s; cursor: pointer; }
-                .demo-chip:hover { background: rgba(255,255,255,0.08); border-color: rgba(139,92,246,0.3); }
-                @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-                @keyframes pulse-glow { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
-                .float { animation: float 6s ease-in-out infinite; }
-                .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
-            `}</style>
+        <div className="min-h-screen flex" style={{ background: '#0F172A' }}>
+            {/* Left Panel: Institutional Brand & Credibility */}
+            <div className="hidden lg:flex flex-1 flex-col justify-between p-16 relative overflow-hidden">
+                {/* Subtle trust lighting */}
+                <div 
+                    className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-25 filter blur-3xl"
+                    style={{ background: '#1D4ED8' }}
+                />
+                <div 
+                    className="absolute -bottom-32 right-0 w-96 h-96 rounded-full opacity-20 filter blur-3xl"
+                    style={{ background: '#0284C7' }}
+                />
 
-            {/* Left Panel — Branding */}
-            <div className="hidden lg:flex flex-1 flex-col items-center justify-center relative overflow-hidden p-16">
-                {/* Gradient orbs */}
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20 pulse-glow" style={{ background: 'radial-gradient(circle, #7c3aed, #4f46e5)' }} />
-                <div className="absolute bottom-1/3 right-1/4 w-64 h-64 rounded-full blur-3xl opacity-15 pulse-glow" style={{ background: 'radial-gradient(circle, #0ea5e9, #2563eb)', animationDelay: '1.5s' }} />
-
-                <div className="relative z-10 text-center">
-                    <div className="float inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-8 shadow-2xl" style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
-                        <GraduationCap size={48} className="text-white" />
+                {/* Brand Header */}
+                <div className="relative z-10 flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: '#1D4ED8' }}>
+                        <GraduationCap size={24} className="text-white" />
                     </div>
-                    <h1 className="text-5xl font-extrabold text-white mb-4 leading-tight">
-                        University<br />
-                        <span style={{ backgroundImage: 'linear-gradient(135deg, #a78bfa, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                            LMS Portal
-                        </span>
+                    <div>
+                        <span className="text-white font-bold text-lg tracking-tight">UniPortal</span>
+                        <p className="text-xs text-slate-400">Higher Education Management System</p>
+                    </div>
+                </div>
+
+                {/* Hero Content */}
+                <div className="relative z-10 max-w-xl my-auto">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold text-blue-200 bg-blue-900/50 border border-blue-700/50 mb-6">
+                        <CheckCircle2 size={13} className="text-blue-400" />
+                        Accredited Higher Education System
+                    </div>
+                    <h1 className="text-4xl lg:text-5xl font-black text-white leading-tight mb-5">
+                        Academic Rigor.<br />
+                        <span className="text-blue-400">Streamlined Learning.</span>
                     </h1>
-                    <p className="text-slate-400 text-lg max-w-sm mx-auto leading-relaxed">
-                        Your gateway to courses, assignments, grades, and attendance — all in one place.
+                    <p className="text-slate-300 text-base leading-relaxed mb-8">
+                        The comprehensive academic environment designed for faculty excellence, 
+                        seamless registrar workflows, and student achievement.
                     </p>
 
-                    <div className="mt-10 grid grid-cols-2 gap-4 max-w-xs mx-auto">
+                    {/* Stat Cards */}
+                    <div className="grid grid-cols-2 gap-4">
                         {[
-                            { label: 'Active Courses', value: '12+' },
-                            { label: 'Faculty Members', value: '50+' },
-                            { label: 'Enrolled Students', value: '400+' },
-                            { label: 'Departments', value: '8' },
-                        ].map(({ label, value }) => (
-                            <div key={label} className="glass rounded-2xl p-4 text-left">
-                                <p className="text-2xl font-bold text-white">{value}</p>
-                                <p className="text-xs text-slate-500 mt-1">{label}</p>
+                            { icon: BookOpen, label: 'Accredited Courses', value: '48+' },
+                            { icon: Users, label: 'Active Students', value: '1,200+' },
+                            { icon: Building2, label: 'Faculties & Depts', value: '14' },
+                            { icon: Award, label: 'Graduation Rate', value: '96.4%' },
+                        ].map((stat, idx) => (
+                            <div 
+                                key={idx}
+                                className="p-4 rounded-xl border border-slate-800 bg-slate-900/60 backdrop-blur-sm"
+                            >
+                                <div className="flex items-center gap-2 mb-1">
+                                    <stat.icon size={15} className="text-blue-400" />
+                                    <span className="text-xs font-medium text-slate-400">{stat.label}</span>
+                                </div>
+                                <p className="text-2xl font-bold text-white tabular">{stat.value}</p>
                             </div>
                         ))}
                     </div>
                 </div>
+
+                {/* Footer copyright */}
+                <div className="relative z-10 text-xs text-slate-500">
+                    © 2026 University Academic System. WCAG 2.2 Compliant Portal.
+                </div>
             </div>
 
-            {/* Right Panel — Login Form */}
-            <div className="w-full lg:w-[480px] flex-shrink-0 flex items-center justify-center p-8 border-l border-white/5">
+            {/* Right Panel: High-Contrast Sign In Form */}
+            <div className="w-full lg:w-[500px] flex-shrink-0 flex items-center justify-center p-8 bg-white shadow-2xl">
                 <div className="w-full max-w-sm">
-                    {/* Mobile logo */}
+                    {/* Mobile Logo */}
                     <div className="lg:hidden flex items-center gap-3 mb-8">
-                        <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}>
-                            <GraduationCap size={20} />
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#1D4ED8' }}>
+                            <GraduationCap size={20} className="text-white" />
                         </div>
-                        <h1 className="text-xl font-bold text-white">University LMS</h1>
+                        <div>
+                            <span className="text-slate-900 font-bold text-base">UniPortal</span>
+                            <p className="text-xs text-slate-500">Student & Faculty Sign In</p>
+                        </div>
                     </div>
 
-                    <div className="mb-8">
-                        <h2 className="text-2xl font-bold text-white">Welcome back</h2>
-                        <p className="text-slate-500 text-sm mt-1">Sign in to your portal</p>
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Sign In</h2>
+                        <p className="text-xs text-slate-500 mt-1">Access your academic account, courses, and records</p>
                     </div>
 
                     <form onSubmit={handleLogin} className="space-y-4">
                         <div>
-                            <label className="block text-xs font-medium text-slate-400 mb-2">Email address</label>
+                            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                                Institutional Email
+                            </label>
                             <div className="relative">
-                                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+                                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                 <input
                                     id="login-email"
                                     type="email"
-                                    autoComplete="email"
                                     required
-                                    placeholder="you@university.edu"
+                                    placeholder="name@university.edu"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="input-glass w-full pl-11 pr-4 py-3 rounded-xl text-sm"
+                                    className="input-field pl-10"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-xs font-medium text-slate-400 mb-2">Password</label>
+                            <div className="flex items-center justify-between mb-1.5">
+                                <label className="block text-xs font-semibold text-slate-700">
+                                    Password
+                                </label>
+                                <a href="#" className="text-xs font-medium text-blue-700 hover:text-blue-800">
+                                    Forgot?
+                                </a>
+                            </div>
                             <div className="relative">
-                                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+                                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                 <input
                                     id="login-password"
                                     type="password"
-                                    autoComplete="current-password"
                                     required
                                     placeholder="••••••••"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="input-glass w-full pl-11 pr-4 py-3 rounded-xl text-sm"
+                                    className="input-field pl-10"
                                 />
                             </div>
                         </div>
 
                         {error && (
-                            <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+                            <div className="text-xs p-3 rounded-lg border border-red-200 bg-red-50 text-red-700">
                                 {error}
                             </div>
                         )}
@@ -160,43 +189,49 @@ export default function LoginPage() {
                             id="login-submit-btn"
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 rounded-xl font-semibold text-sm text-white disabled:opacity-60 transition-all flex items-center justify-center gap-2 group"
-                            style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}
+                            className="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all flex items-center justify-center gap-2"
+                            style={{ background: '#1D4ED8' }}
+                            onMouseEnter={(e) => (e.currentTarget.style.background = '#1E3A8A')}
+                            onMouseLeave={(e) => (e.currentTarget.style.background = '#1D4ED8')}
                         >
                             {loading ? (
-                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                             ) : (
-                                <>Sign In <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></>
+                                <>
+                                    Sign In to Portal
+                                    <ArrowRight size={16} />
+                                </>
                             )}
                         </button>
                     </form>
 
-                    {/* Demo quick-fill */}
-                    <div className="mt-8">
-                        <div className="flex items-center gap-2 mb-3">
-                            <Sparkles size={13} className="text-violet-400" />
-                            <p className="text-xs text-slate-500">Quick demo — click to fill credentials</p>
-                        </div>
+                    {/* Quick Demo Accounts */}
+                    <div className="mt-8 pt-6 border-t border-slate-100">
+                        <p className="text-xs font-semibold text-slate-600 mb-2.5">
+                            Quick Demo Sign-In
+                        </p>
                         <div className="grid grid-cols-2 gap-2">
                             {DEMO_USERS.map((user) => (
-                                <button key={user.email} onClick={() => fillDemo(user)}
-                                    className="demo-chip rounded-xl p-3 text-left">
-                                    <p className="text-xs font-semibold text-white">{user.label}</p>
-                                    <p className="text-[10px] text-slate-600 truncate">{user.role}</p>
+                                <button
+                                    key={user.email}
+                                    type="button"
+                                    onClick={() => fillDemo(user)}
+                                    className="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 hover:border-slate-300 text-left transition-all"
+                                >
+                                    <p className="text-xs font-bold text-slate-800 truncate">{user.label}</p>
+                                    <span className={`inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold border ${user.badge}`}>
+                                        {user.role}
+                                    </span>
                                 </button>
                             ))}
                         </div>
                     </div>
 
                     <div className="mt-6 text-center">
-                        <a href="/admissions" className="text-xs text-violet-400 hover:text-violet-300 transition-colors">
-                            New student? Apply for admission →
+                        <a href="/admissions" className="text-xs font-semibold text-blue-700 hover:text-blue-800">
+                            Prospective student? Apply for admission →
                         </a>
                     </div>
-
-                    <p className="mt-8 text-center text-[11px] text-slate-700">
-                        © 2024 University LMS · Faculty of Engineering
-                    </p>
                 </div>
             </div>
         </div>

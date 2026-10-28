@@ -1,0 +1,326 @@
+[
+  {
+    "site": "coursera_home",
+    "url": "https://www.coursera.org",
+    "status": "error",
+    "error": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://www.coursera.org/\", waiting until \"networkidle\"\u001b[22m\n"
+  },
+  {
+    "site": "coursera_browse",
+    "description": "Coursera - Course Browse / Dashboard",
+    "url": "https://www.coursera.org/browse",
+    "title": "Coursera Online Course Catalog by Topic and Skill | Coursera",
+    "metaDescription": "Choose from hundreds of free courses or pay to earn a Course or Specialization Certificate. Explore our catalog of online degrees, certificates, Specializations, &amp; MOOCs in data science, computer science, business, health, and dozens of other topics.",
+    "navLinks": [
+      "For Individuals",
+      "For Businesses",
+      "For Universities",
+      "For Governments",
+      "Degrees",
+      "Log In",
+      "Join for Free"
+    ],
+    "headings": [
+      "Explore Categories",
+      "Most popular",
+      "Explore roles",
+      "Google Analytics for Data Insights",
+      "Google AI Tools and Applications"
+    ],
+    "colors": {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(13, 15, 18)",
+      "fontFamily": "\"Source Sans Pro\", Arial, sans-serif"
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\coursera_browse.png",
+    "status": "success"
+  },
+  {
+    "site": "canvas_demo",
+    "description": "Canvas LMS - Login / Landing",
+    "url": "https://canvas.instructure.com",
+    "title": "Free-for-Teacher Platform",
+    "metaDescription": "",
+    "navLinks": [],
+    "headings": [
+      "Canvas Lite is live!"
+    ],
+    "colors": {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(0, 0, 0)",
+      "fontFamily": "Arial, Helvetica, sans-serif"
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\canvas_demo.png",
+    "status": "success"
+  },
+  {
+    "site": "google_classroom",
+    "description": "Google Classroom - Portal",
+    "url": "https://classroom.google.com",
+    "title": "Classroom Management Tools & Resources - Google for Education",
+    "metaDescription": "Get started with Google Classroom, a central hub for tools and resources designed to help educators manage classrooms and enrich learning experiences.",
+    "navLinks": [
+      "Jump to content",
+      "for Education",
+      "Resource Library",
+      "Training Courses",
+      "Get Product Help",
+      "Sign Into Classroom",
+      "For K12",
+      "Educators Certification Programs",
+      "Google Workspace for Education Overview",
+      "Our Commitment"
+    ],
+    "headings": [
+      "Workspace for Education",
+      "Chromebooks",
+      "Where teaching and learning come together",
+      "Introducing no-cost AI tools in Google Classroom",
+      "Enrich and personalize learning"
+    ],
+    "colors": {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(95, 99, 104)",
+      "fontFamily": "\"Google Sans Flex\", Roboto, Arial, Helvetica, sans-serif"
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\google_classroom.png",
+    "status": "success"
+  },
+  {
+    "site": "moodle_demo",
+    "description": "Moodle Demo - Dashboard",
+    "url": "https://school.moodledemo.net",
+    "title": "Home | Mount Orange",
+    "metaDescription": "",
+    "navLinks": [
+      "Home",
+      "Calendar",
+      "More",
+      "English ‎(en)‎",
+      "አማርኛ ‎(am)‎",
+      "Afaan Oromoo ‎(om)‎",
+      "Afrikaans ‎(af)‎",
+      "Aragonés ‎(an)‎",
+      "Aranés ‎(oc_es)‎"
+    ],
+    "headings": [
+      "Mount Orange",
+      "Community news and events"
+    ],
+    "colors": {
+      "background": "rgb(248, 249, 250)",
+      "color": "rgb(51, 51, 102)",
+      "fontFamily": "\"Helvetica Neue\", Helvetica, Arial, sans-serif"
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\moodle_demo.png",
+    "status": "success"
+  },
+  {
+    "site": "moodle_demo_student",
+    "description": "Moodle Demo - Student Dashboard",
+    "url": "https://school.moodledemo.net/my/",
+    "title": "Home | Mount Orange",
+    "metaDescription": "",
+    "navLinks": [
+      "Home",
+      "Calendar",
+      "More",
+      "English ‎(en)‎",
+      "አማርኛ ‎(am)‎",
+      "Afaan Oromoo ‎(om)‎",
+      "Afrikaans ‎(af)‎",
+      "Aragonés ‎(an)‎",
+      "Aranés ‎(oc_es)‎"
+    ],
+    "headings": [
+      "Mount Orange",
+      "Community news and events"
+    ],
+    "colors": {
+      "background": "rgb(248, 249, 250)",
+      "color": "rgb(51, 51, 102)",
+      "fontFamily": "\"Helvetica Neue\", Helvetica, Arial, sans-serif"
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\moodle_demo_student.png",
+    "status": "success"
+  },
+  {
+    "site": "udemy_home",
+    "description": "Udemy - Homepage",
+    "url": "https://www.udemy.com",
+    "title": "Udemy: Online Courses for Skills, Careers & AI",
+    "metaDescription": "Learn in-demand skills with online courses, get professional certificates that advance your career, and explore courses in AI, coding, business and more.",
+    "navLinks": [
+      "Skip to content",
+      "Learn AI with Google",
+      "Launch a new career",
+      "Prepare for a certification",
+      "Practice with Role Play",
+      "Udemy Communities",
+      "Development",
+      "Business",
+      "Finance & Accounting"
+    ],
+    "headings": [
+      "New & Featured",
+      "Explore by goal",
+      "Learn essential career and life skills",
+      "Trending Courses",
+      "Reimagine your career in the AI era"
+    ],
+    "colors": {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "oklch(0.2974 0.0362 281.74)",
+      "fontFamily": "\"Udemy Sans\", \"Noto Sans JP\", Vazirmatn, \"SF Pro Text\", -apple-system, BlinkMacSystemFont, Roboto, \"Segoe UI\", Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\udemy_home.png",
+    "status": "success"
+  },
+  {
+    "site": "edx_home",
+    "description": "edX - Homepage",
+    "url": "https://www.edx.org",
+    "title": "edX | Online Courses, Certificates & Degrees from Leading Institutions",
+    "metaDescription": "Find the online learning path for you, delivered by world-class institutions like Harvard, Google, Amazon, and more.",
+    "navLinks": [
+      "Artificial Intelligence",
+      "Data Analysis",
+      "Engineering",
+      "Computer Science",
+      "Business Management",
+      "Data Science",
+      "Finance",
+      "Leadership",
+      "Web Development"
+    ],
+    "headings": [
+      "Build new skills. Advance your career.",
+      "Your Fall reset has arrived",
+      "One catalogue, the full career arc.",
+      "Level up your career",
+      "Analytics & AI skills, powered by GTx"
+    ],
+    "colors": {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(0, 38, 43)",
+      "fontFamily": "Inter, \"Inter Fallback\""
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\edx_home.png",
+    "status": "success"
+  },
+  {
+    "site": "edx_dashboard",
+    "description": "edX - Course Discovery",
+    "url": "https://www.edx.org/learn",
+    "title": "Online courses by subject: Business, tech, data, and more | edX",
+    "metaDescription": "Browse edX's online courses by topic. Learn from top schools in business, computer science, AI, data science, languages, and more, and earn a certificate.",
+    "navLinks": [
+      "Artificial Intelligence",
+      "Data Analysis",
+      "Engineering",
+      "Computer Science",
+      "Business Management",
+      "Data Science",
+      "Finance",
+      "Leadership",
+      "Web Development"
+    ],
+    "headings": [
+      "Browse online courses by topic",
+      "Find the right course topic for your goals",
+      "Popular online courses to get started",
+      "Browse online courses by subject",
+      "Learn skills for in-demand careers"
+    ],
+    "colors": {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(0, 38, 43)",
+      "fontFamily": "Inter, \"Inter Fallback\""
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\edx_dashboard.png",
+    "status": "success"
+  },
+  {
+    "site": "blackboard_demo",
+    "url": "https://help.blackboard.com/Learn/Instructor/Ultra/Getting_Started",
+    "status": "error",
+    "error": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://help.blackboard.com/Learn/Instructor/Ultra/Getting_Started\", waiting until \"networkidle\"\u001b[22m\n"
+  },
+  {
+    "site": "khan_academy",
+    "url": "https://www.khanacademy.org",
+    "status": "error",
+    "error": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://www.khanacademy.org/\", waiting until \"networkidle\"\u001b[22m\n"
+  },
+  {
+    "site": "mit_opencourseware",
+    "url": "https://ocw.mit.edu",
+    "status": "error",
+    "error": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://ocw.mit.edu/\", waiting until \"networkidle\"\u001b[22m\n"
+  },
+  {
+    "site": "canvas_theme",
+    "description": "Canvas - Product Page UI",
+    "url": "https://www.instructure.com/canvas",
+    "title": "Canvas by Instructure: World Leading LMS for Teaching & Learning",
+    "metaDescription": "Discover Canvas by Instructure, the world-leading, user-friendly LMS designed to simplify teaching and enhance student learning.",
+    "navLinks": [
+      "Partners",
+      "The EdTech Collective",
+      "Channel Partners",
+      "Support",
+      "Login",
+      "Canvas",
+      "Student ePortfolio (external link, opens in a new tab)",
+      "Mastery Connect (external link, opens in a new tab)",
+      "Elevate Data Sync (external link, opens in a new tab)",
+      "LearnPlatform by Instructure (external link, opens in a new tab)"
+    ],
+    "headings": [
+      "Utility-inst",
+      "Select your location",
+      "Main - inst",
+      "Select your location",
+      "Utility-inst-Login-only"
+    ],
+    "colors": {
+      "background": "rgb(254, 254, 254)",
+      "color": "rgb(6, 28, 48)",
+      "fontFamily": "circularxx, Arial, Helvetica, sans-serif"
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\canvas_theme.png",
+    "status": "success"
+  },
+  {
+    "site": "teachable_home",
+    "description": "Teachable - LMS Platform",
+    "url": "https://teachable.com",
+    "title": "Teachable — Build & Sell Online Courses, Coaching, Memberships & More",
+    "metaDescription": "Join 150,000+ creators & businesses using the top online course platform to sell courses, coaching, and digital products. Start for free.",
+    "navLinks": [
+      "Online Courses",
+      "Digital Downloads",
+      "Memberships",
+      "Coaching",
+      "AI Features",
+      "Payments",
+      "Site Builder",
+      "Sales and Marketing",
+      "Student Experience"
+    ],
+    "headings": [
+      "The future of your education business happens here",
+      "Teach in every way your students want to learn",
+      "Teachable Payments: the checkout you've been waiting for",
+      "Why 150,000 industry leaders choose Teachable",
+      "Made for the modern learner"
+    ],
+    "colors": {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(0, 0, 0)",
+      "fontFamily": "Peridotpenormvf, Arial, sans-serif"
+    },
+    "screenshot": "D:\\Development Projects\\Resume-Projects\\university-lms\\apps\\web\\public\\research\\teachable_home.png",
+    "status": "success"
+  }
+]
